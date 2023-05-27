@@ -2539,7 +2539,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   con: {fileID: 1377342156}
   anim: {fileID: 0}
-  camera: {fileID: 0}
+  cameraTrans: {fileID: 916207044}
 --- !u!1 &1421818249
 GameObject:
   m_ObjectHideFlags: 0
@@ -2722,6 +2722,7 @@ GameObject:
   - component: {fileID: 1505900531}
   - component: {fileID: 1505900530}
   - component: {fileID: 1505900529}
+  - component: {fileID: 1505900528}
   m_Layer: 0
   m_Name: Friend_1
   m_TagString: Untagged
@@ -2743,6 +2744,18 @@ Transform:
   m_Father: {fileID: 1963237775}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1505900528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505900526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c5d5f6f0c6c7fc4f8cd78b07cba920e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!143 &1505900529
 CharacterController:
   m_ObjectHideFlags: 0

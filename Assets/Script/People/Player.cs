@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] CharacterController con;
     [SerializeField] Animator anim;
-    [SerializeField] Camera camera;
+    [SerializeField] Transform cameraTrans;
 
     float normalSpeed = 3f; // 通常時の移動速度
     float sprintSpeed = 5f; // ダッシュ時の移動速度
@@ -14,12 +14,8 @@ public class Player : MonoBehaviour
 
     Vector3 moveDirection = Vector3.zero;
 
-    Vector3 startPos;
+    bool hitFriend = false;
 
-    void Start()
-    {
-        startPos = transform.position;
-    }
 
     void Update()
     {
@@ -27,13 +23,13 @@ public class Player : MonoBehaviour
         float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : normalSpeed;
 
         // カメラの向きを基準にした正面方向のベクトル
-        Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
+        Vector3 cameraForward = Vector3.Scale(cameraTrans.forward, new Vector3(1, 0, 1)).normalized;
 
         // 前後左右の入力（WASDキー）から、移動のためのベクトルを計算
         // Input.GetAxis("Vertical") は前後（WSキー）の入力値
         // Input.GetAxis("Horizontal") は左右（ADキー）の入力値
         Vector3 moveZ = cameraForward * Input.GetAxis("Vertical") * speed;  //　前後（カメラ基準）　 
-        Vector3 moveX = Camera.main.transform.right * Input.GetAxis("Horizontal") * speed; // 左右（カメラ基準）
+        Vector3 moveX = cameraTrans.right * Input.GetAxis("Horizontal") * speed; // 左右（カメラ基準）
 
         // isGrounded は地面にいるかどうかを判定します
         // 地面にいるときはジャンプを可能に
@@ -60,5 +56,16 @@ public class Player : MonoBehaviour
 
         // Move は指定したベクトルだけ移動させる命令
         con.Move(moveDirection * Time.deltaTime);
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        var friend = hit.gameObject.GetComponent<Friend>();
+        //他のユーザーにぶつかればチャットするかをPlayerに尋ねる
+        if (!hitFriend && friend != null)
+        {
+            hitFriend = true;
+            Debug.Log($"Wanna talk with {friend.Name}?");
+        }
     }
 }
