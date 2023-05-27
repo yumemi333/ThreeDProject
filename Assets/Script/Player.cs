@@ -5,6 +5,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] CharacterController con;
     [SerializeField] Animator anim;
+    [SerializeField] Camera camera;
 
     float normalSpeed = 3f; // 通常時の移動速度
     float sprintSpeed = 5f; // ダッシュ時の移動速度
@@ -17,10 +18,6 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        // マウスカーソルを非表示にし、位置を固定
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-
         startPos = transform.position;
     }
 
