@@ -609,7 +609,7 @@ RectTransform:
   - {fileID: 1060900598}
   - {fileID: 820985327}
   m_Father: {fileID: 1141087708}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -978,7 +978,7 @@ GameObject:
   m_Component:
   - component: {fileID: 563966441}
   m_Layer: 0
-  m_Name: Chat
+  m_Name: _Chat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1000,6 +1000,7 @@ RectTransform:
   - {fileID: 766713801}
   - {fileID: 1867283012}
   - {fileID: 253879225}
+  - {fileID: 1851163083}
   m_Father: {fileID: 1141087708}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1281,7 +1282,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 30, y: 0}
-  m_SizeDelta: {x: 500, y: 28.903225}
+  m_SizeDelta: {x: 500, y: 26.626324}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &824379925
 MonoBehaviour:
@@ -1947,7 +1948,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 563966441}
-  - {fileID: 1851163083}
   - {fileID: 407901897}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -2420,8 +2420,8 @@ GameObject:
   - component: {fileID: 1377342155}
   - component: {fileID: 1377342154}
   - component: {fileID: 1377342153}
-  - component: {fileID: 1377342152}
   - component: {fileID: 1377342156}
+  - component: {fileID: 1377342152}
   - component: {fileID: 1377342157}
   m_Layer: 0
   m_Name: Player
@@ -2501,30 +2501,29 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1377342151}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.62, z: 0}
+  m_LocalPosition: {x: -0.668, y: 1.5, z: 0.078}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1408772070}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &1377342156
-CharacterController:
+--- !u!54 &1377342156
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1377342151}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!114 &1377342157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2537,9 +2536,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f70d684b4197c04db95c55d4bda9170, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  con: {fileID: 1377342156}
+  rigitBody: {fileID: 1377342156}
   anim: {fileID: 0}
   cameraTrans: {fileID: 916207044}
+  groundChek: {fileID: 1408772071}
+  normalSpeed: 6
+  sprintSpeed: 10
+  jump: 15
+--- !u!1 &1408772069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1408772070}
+  - component: {fileID: 1408772071}
+  m_Layer: 0
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1408772070
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408772069}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1377342155}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1408772071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408772069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36c6de14648950945ba1e48dff58543b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  capsule: {fileID: 1377342152}
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1421818249
 GameObject:
   m_ObjectHideFlags: 0
@@ -2721,8 +2771,8 @@ GameObject:
   - component: {fileID: 1505900532}
   - component: {fileID: 1505900531}
   - component: {fileID: 1505900530}
-  - component: {fileID: 1505900529}
   - component: {fileID: 1505900528}
+  - component: {fileID: 1505900529}
   m_Layer: 0
   m_Name: Friend_1
   m_TagString: Untagged
@@ -2756,24 +2806,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c5d5f6f0c6c7fc4f8cd78b07cba920e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!143 &1505900529
-CharacterController:
+--- !u!54 &1505900529
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1505900526}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!136 &1505900530
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3209,7 +3257,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1851163083
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3217,13 +3265,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1851163082}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1609666166}
-  m_Father: {fileID: 1141087708}
-  m_RootOrder: 1
+  m_Father: {fileID: 563966441}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

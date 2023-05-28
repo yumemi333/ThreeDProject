@@ -3,14 +3,14 @@
 public class Player : MonoBehaviour
 {
 
-    [SerializeField] CharacterController con;
+    [SerializeField] Rigidbody rigitBody;
     [SerializeField] Animator anim;
     [SerializeField] Transform cameraTrans;
+    [SerializeField] GroundChek groundChek;
 
-    float normalSpeed = 3f; // 通常時の移動速度
-    float sprintSpeed = 5f; // ダッシュ時の移動速度
-    float jump = 8f;        // ジャンプ力
-    float gravity = 10f;    // 重力の大きさ
+    [SerializeField] float normalSpeed = 3f; // 通常時の移動速度
+    [SerializeField] float sprintSpeed = 5f; // ダッシュ時の移動速度
+    [SerializeField] float jump = 8f;        // ジャンプ力
 
     Vector3 moveDirection = Vector3.zero;
 
@@ -31,34 +31,26 @@ public class Player : MonoBehaviour
         Vector3 moveZ = cameraForward * Input.GetAxis("Vertical") * speed;  //　前後（カメラ基準）　 
         Vector3 moveX = cameraTrans.right * Input.GetAxis("Horizontal") * speed; // 左右（カメラ基準）
 
-        // isGrounded は地面にいるかどうかを判定します
         // 地面にいるときはジャンプを可能に
-        if (con.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && groundChek.CheckGroundStatus())
         {
-            moveDirection = moveZ + moveX;
-            if (Input.GetButtonDown("Jump"))
-            {
-                moveDirection.y = jump;
-            }
+            moveDirection.y = jump;
         }
         else
         {
-            // 重力を効かせる
-            moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
-            moveDirection.y -= gravity * Time.deltaTime;
+            moveDirection.y = 0;
         }
-
-        // 移動のアニメーション
-        //anim.SetFloat("MoveSpeed", (moveZ + moveX).magnitude);
 
         // プレイヤーの向きを入力の向きに変更　
         transform.LookAt(transform.position + moveZ + moveX);
 
+        moveDirection = moveZ + moveX + new Vector3(0, moveDirection.y, 0);
         // Move は指定したベクトルだけ移動させる命令
-        con.Move(moveDirection * Time.deltaTime);
+        rigitBody.position = new Vector3(rigitBody.position.x + moveDirection.x * Time.deltaTime, rigitBody.position.y + moveDirection.y * Time.deltaTime, rigitBody.position.z + moveDirection.z * Time.deltaTime);
+
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    private void OnCollisionEnter(Collision hit)
     {
         var friend = hit.gameObject.GetComponent<Friend>();
         //他のユーザーにぶつかればチャットするかをPlayerに尋ねる
