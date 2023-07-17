@@ -1,4 +1,4 @@
-using ExitGames.Client.Photon;
+﻿using ExitGames.Client.Photon;
 using Photon.Chat;
 using Photon.Chat.Demo;
 using Photon.Pun;
@@ -52,6 +52,7 @@ namespace Chat
         [SerializeField] private bool showState = true;
         [SerializeField] private Text stateText; // set in inspector
         [SerializeField] private Text userIdText; // set in inspector
+        [SerializeField] private GameObject startObj; 
 
         public void Start()
         {
@@ -92,6 +93,7 @@ namespace Chat
 #endif
             this.chatClient.AuthValues = new Photon.Chat.AuthenticationValues(this.UserName);
             this.chatClient.ConnectUsingSettings(this.chatAppSettings);
+            startObj.SetActive(false);
 
             this.channelToggleToInstantiate.gameObject.SetActive(false);
             Debug.Log("Connecting as: " + this.UserName);
@@ -340,6 +342,7 @@ namespace Chat
 
         public void OnDisconnected()
         {
+            chatPanel.SetActive(false);
             Debug.Log("OnDisconnected()");
             this.connectingLabel.SetActive(false);
         }

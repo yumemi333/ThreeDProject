@@ -14,8 +14,9 @@ public class Player : MonoBehaviour
 
     Vector3 moveDirection = Vector3.zero;
 
-    bool hitFriend = false;
-
+    [SerializeField] private GameObject chatStartObj = null;
+    [SerializeField] private float distance = 5f;
+    private Friend friend = null;
 
     void Update()
     {
@@ -48,16 +49,24 @@ public class Player : MonoBehaviour
         // Move は指定したベクトルだけ移動させる命令
         rigitBody.position = new Vector3(rigitBody.position.x + moveDirection.x * Time.deltaTime, rigitBody.position.y + moveDirection.y * Time.deltaTime, rigitBody.position.z + moveDirection.z * Time.deltaTime);
 
+        if (friend != null)
+        {
+            float dist = Vector3.Distance(this.transform.position, friend.transform.position);
+            if(dist >= distance)
+            {
+                friend = null;
+                chatStartObj.SetActive(false);
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision hit)
     {
-        var friend = hit.gameObject.GetComponent<Friend>();
+        friend = hit.gameObject.GetComponent<Friend>();
         //他のユーザーにぶつかればチャットするかをPlayerに尋ねる
-        if (!hitFriend && friend != null)
+        if (friend != null)
         {
-            hitFriend = true;
-            Debug.Log($"Wanna talk with {friend.Name}?");
+            chatStartObj.SetActive(true);
         }
     }
 }
