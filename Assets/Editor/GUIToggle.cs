@@ -8,7 +8,7 @@ namespace UnityEditorExtension
         private const int WIDTH = 16;
         private const int OFFSET = 10;
 
-        [MenuItem(Config.ExtensionMenuPath + nameof(GUIToggle))]
+        [InitializeOnLoadMethod]
         private static void Initialize()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
