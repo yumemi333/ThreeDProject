@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Chat;
+using Photon.Chat;
+using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -20,6 +22,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        // 話しているときは動かない
+        if (ChatController.Instance.ChatClient != null && ChatState.Disconnected != ChatController.Instance.ChatClient.State)
+            return;
+
         // 移動速度を取得
         float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : normalSpeed;
 
@@ -52,7 +58,7 @@ public class Player : MonoBehaviour
         if (friend != null)
         {
             float dist = Vector3.Distance(this.transform.position, friend.transform.position);
-            if(dist >= distance)
+            if (dist >= distance)
             {
                 friend = null;
                 chatStartObj.SetActive(false);

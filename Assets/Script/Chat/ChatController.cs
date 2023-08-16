@@ -1,5 +1,4 @@
-﻿using ExitGames.Client.Photon;
-using Photon.Chat;
+﻿using Photon.Chat;
 using Photon.Chat.Demo;
 using Photon.Pun;
 using Photon.Realtime;
@@ -12,6 +11,15 @@ namespace Chat
 {
     public class ChatController : MonoBehaviour, IChatClientListener
     {
+        private static ChatController instance = null;
+        public static ChatController Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         [SerializeField] private string[] channelsToJoinOnConnect; // set in inspector. Demo channels to join automatically.
 
         [SerializeField] private string[] friendsList;
@@ -22,7 +30,7 @@ namespace Chat
 
         private string selectedChannelName; // mainly used for GUI/input
 
-        private ChatClient chatClient;
+        public ChatClient ChatClient;
 
 #if !PHOTON_UNITY_NETWORKING
         public ChatAppSettings ChatAppSettings
@@ -52,12 +60,26 @@ namespace Chat
         [SerializeField] private bool showState = true;
         [SerializeField] private Text stateText; // set in inspector
         [SerializeField] private Text userIdText; // set in inspector
-        [SerializeField] private GameObject startObj; 
-
-        public void Start()
+        [SerializeField] private GameObject startObj;
+        public void Connect()
         {
+            this.ChatClient = new ChatClient(this);
+#if !UNITY_WEBGL
+            this.ChatClient.UseBackgroundWorkerForSending = true;
+#endif
+            this.ChatClient.AuthValues = new Photon.Chat.AuthenticationValues(this.UserName);
+            this.ChatClient.ConnectUsingSettings(this.chatAppSettings);
+            startObj.SetActive(false);
+
+            this.channelToggleToInstantiate.gameObject.SetActive(false);
+
+            this.connectingLabel.SetActive(true);
+        }
+
+        private void Start()
+        {
+            instance = this;
             this.userIdText.text = "";
-            this.stateText.text = "";
             this.stateText.gameObject.SetActive(true);
             this.userIdText.gameObject.SetActive(true);
             this.chatPanel.gameObject.SetActive(false);
@@ -75,7 +97,6 @@ namespace Chat
             bool appIdPresent = !string.IsNullOrEmpty(this.chatAppSettings.AppIdChat);
 
             this.missingAppIdErrorPanel.SetActive(!appIdPresent);
-            //this.userIdFormPanel.gameObject.SetActive(appIdPresent);
 
             if (!appIdPresent)
             {
@@ -83,47 +104,37 @@ namespace Chat
             }
         }
 
-        public void Connect()
+        public void TapDisconnect()
         {
-            // this.userIdFormPanel.gameObject.SetActive(false);
-
-            this.chatClient = new ChatClient(this);
-#if !UNITY_WEBGL
-            this.chatClient.UseBackgroundWorkerForSending = true;
-#endif
-            this.chatClient.AuthValues = new Photon.Chat.AuthenticationValues(this.UserName);
-            this.chatClient.ConnectUsingSettings(this.chatAppSettings);
-            startObj.SetActive(false);
-
-            this.channelToggleToInstantiate.gameObject.SetActive(false);
-            Debug.Log("Connecting as: " + this.UserName);
-
-            this.connectingLabel.SetActive(true);
+            if (this.ChatClient != null)
+            {
+                this.ChatClient.Disconnect();
+            }
         }
 
         /// <summary>To avoid that the Editor becomes unresponsive, disconnect all Photon connections in OnDestroy.</summary>
         public void OnDestroy()
         {
-            if (this.chatClient != null)
+            if (this.ChatClient != null)
             {
-                this.chatClient.Disconnect();
+                this.ChatClient.Disconnect();
             }
         }
 
         /// <summary>To avoid that the Editor becomes unresponsive, disconnect all Photon connections in OnApplicationQuit.</summary>
         public void OnApplicationQuit()
         {
-            if (this.chatClient != null)
+            if (this.ChatClient != null)
             {
-                this.chatClient.Disconnect();
+                this.ChatClient.Disconnect();
             }
         }
 
         public void Update()
         {
-            if (this.chatClient != null)
+            if (this.ChatClient != null)
             {
-                this.chatClient.Service(); // make sure to call this regularly! it limits effort internally, so calling often is ok!
+                this.ChatClient.Service(); // make sure to call this regularly! it limits effort internally, so calling often is ok!
             }
 
             // check if we are missing context, which means we got kicked out to get back to the Photon Demo hub.
@@ -163,11 +174,11 @@ namespace Chat
                     this.testBytes = new byte[this.TestLength];
                 }
 
-                this.chatClient.SendPrivateMessage(this.chatClient.AuthValues.UserId, this.testBytes, true);
+                this.ChatClient.SendPrivateMessage(this.ChatClient.AuthValues.UserId, this.testBytes, true);
             }
 
 
-            bool doingPrivateChat = this.chatClient.PrivateChannels.ContainsKey(this.selectedChannelName);
+            bool doingPrivateChat = this.ChatClient.PrivateChannels.ContainsKey(this.selectedChannelName);
             string privateChatTarget = string.Empty;
             if (doingPrivateChat)
             {
@@ -205,26 +216,26 @@ namespace Chat
                         messages.Add(subtokens[1]);
                     }
 
-                    this.chatClient.SetOnlineStatus(newState, messages.ToArray()); // this is how you set your own state and (any) message
+                    this.ChatClient.SetOnlineStatus(newState, messages.ToArray()); // this is how you set your own state and (any) message
                 }
                 else if ((tokens[0].Equals("\\subscribe") || tokens[0].Equals("\\s")) && !string.IsNullOrEmpty(tokens[1]))
                 {
-                    this.chatClient.Subscribe(tokens[1].Split(new char[] { ' ', ',' }));
+                    this.ChatClient.Subscribe(tokens[1].Split(new char[] { ' ', ',' }));
                 }
                 else if ((tokens[0].Equals("\\unsubscribe") || tokens[0].Equals("\\u")) && !string.IsNullOrEmpty(tokens[1]))
                 {
-                    this.chatClient.Unsubscribe(tokens[1].Split(new char[] { ' ', ',' }));
+                    this.ChatClient.Unsubscribe(tokens[1].Split(new char[] { ' ', ',' }));
                 }
                 else if (tokens[0].Equals("\\clear"))
                 {
                     if (doingPrivateChat)
                     {
-                        this.chatClient.PrivateChannels.Remove(this.selectedChannelName);
+                        this.ChatClient.PrivateChannels.Remove(this.selectedChannelName);
                     }
                     else
                     {
                         ChatChannel channel;
-                        if (this.chatClient.TryGetChannel(this.selectedChannelName, doingPrivateChat, out channel))
+                        if (this.ChatClient.TryGetChannel(this.selectedChannelName, doingPrivateChat, out channel))
                         {
                             channel.ClearMessages();
                         }
@@ -237,7 +248,7 @@ namespace Chat
 
                     string targetUser = subtokens[0];
                     string message = subtokens[1];
-                    this.chatClient.SendPrivateMessage(targetUser, message);
+                    this.ChatClient.SendPrivateMessage(targetUser, message);
                 }
                 else if ((tokens[0].Equals("\\join") || tokens[0].Equals("\\j")) && !string.IsNullOrEmpty(tokens[1]))
                 {
@@ -250,7 +261,7 @@ namespace Chat
                     }
                     else
                     {
-                        this.chatClient.Subscribe(new string[] { subtokens[0] });
+                        this.ChatClient.Subscribe(new string[] { subtokens[0] });
                     }
                 }
 #if CHAT_EXTENDED
@@ -272,11 +283,11 @@ namespace Chat
             {
                 if (doingPrivateChat)
                 {
-                    this.chatClient.SendPrivateMessage(privateChatTarget, inputLine);
+                    this.ChatClient.SendPrivateMessage(privateChatTarget, inputLine);
                 }
                 else
                 {
-                    this.chatClient.PublishMessage(this.selectedChannelName, inputLine);
+                    this.ChatClient.PublishMessage(this.selectedChannelName, inputLine);
                 }
             }
         }
@@ -306,7 +317,7 @@ namespace Chat
         {
             if (this.channelsToJoinOnConnect != null && this.channelsToJoinOnConnect.Length > 0)
             {
-                this.chatClient.Subscribe(this.channelsToJoinOnConnect, this.historyLengthToFetch);
+                this.ChatClient.Subscribe(this.channelsToJoinOnConnect, this.historyLengthToFetch);
             }
 
             this.connectingLabel.SetActive(false);
@@ -317,7 +328,7 @@ namespace Chat
 
             if (this.friendsList != null && this.friendsList.Length > 0)
             {
-                this.chatClient.AddFriends(this.friendsList); // Add some users to the server-list to get their status updates
+                this.ChatClient.AddFriends(this.friendsList); // Add some users to the server-list to get their status updates
 
                 // add to the UI as well
                 foreach (string _friend in this.friendsList)
@@ -337,7 +348,7 @@ namespace Chat
             }
 
 
-            this.chatClient.SetOnlineStatus(ChatUserStatus.Online); // You can set your online state (without a mesage).
+            this.ChatClient.SetOnlineStatus(ChatUserStatus.Online); // You can set your online state (without a mesage).
         }
 
         public void OnDisconnected()
@@ -357,41 +368,6 @@ namespace Chat
 
         public void OnSubscribed(string[] channels, bool[] results)
         {
-            // in this demo, we simply send a message into each channel. This is NOT a must have!
-            foreach (string channel in channels)
-            {
-                this.chatClient.PublishMessage(channel, "says 'hi'."); // you don't HAVE to send a msg on join but you could.
-
-                if (this.channelToggleToInstantiate != null)
-                {
-                    this.InstantiateChannelButton(channel);
-
-                }
-            }
-
-            Debug.Log("OnSubscribed: " + string.Join(", ", channels));
-
-            /*
-            // select first subscribed channel in alphabetical order
-            if (this.chatClient.PublicChannels.Count > 0)
-            {
-                var l = new List<string>(this.chatClient.PublicChannels.Keys);
-                l.Sort();
-                string selected = l[0];
-                if (this.channelToggles.ContainsKey(selected))
-                {
-                    ShowChannel(selected);
-                    foreach (var c in this.channelToggles)
-                    {
-                        c.Value.isOn = false;
-                    }
-                    this.channelToggles[selected].isOn = true;
-                    AddMessageToSelectedChannel(WelcomeText);
-                }
-            }
-            */
-
-            // Switch to the first newly created channel
             this.ShowChannel(channels[0]);
         }
 
@@ -535,7 +511,7 @@ namespace Chat
         public void AddMessageToSelectedChannel(string msg)
         {
             ChatChannel channel = null;
-            bool found = this.chatClient.TryGetChannel(this.selectedChannelName, out channel);
+            bool found = this.ChatClient.TryGetChannel(this.selectedChannelName, out channel);
             if (!found)
             {
                 Debug.Log("AddMessageToSelectedChannel failed to find channel: " + this.selectedChannelName);
@@ -558,7 +534,7 @@ namespace Chat
             }
 
             ChatChannel channel = null;
-            bool found = this.chatClient.TryGetChannel(channelName, out channel);
+            bool found = this.ChatClient.TryGetChannel(channelName, out channel);
             if (!found)
             {
                 Debug.Log("ShowChannel failed to find channel: " + channelName);

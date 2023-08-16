@@ -9,12 +9,8 @@ public class GroundChek : MonoBehaviour
 
     public bool CheckGroundStatus()
     {
-        var a = Physics.Raycast(transform.position, Vector2.down, capsule.height / 2 + 0.1f, groundLayers);
-        if (a)
-        {
-            Debug.Log("fdsafk");
-        }
-        return a;
+        var corride = Physics.Raycast(transform.position, Vector2.down, capsule.height / 2 + 0.1f, groundLayers);
+        return corride;
     }
     void OnDrawGizmos()
     {
